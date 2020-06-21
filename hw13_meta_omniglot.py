@@ -43,10 +43,10 @@ workspace_dir = 'HW13_Data'
 """我們看一下 Omniglot 的 dataset 長什麼樣子"""
 
 from PIL import Image
-from IPython.display import display
-for i in range(10, 20):
-  im = Image.open("Omniglot/images_background/Japanese_(hiragana).0/character13/0500_" + str (i) + ".png")
-  display(im)
+#from IPython.display import display
+#for i in range(10, 20):
+#  im = Image.open("Omniglot/images_background/Japanese_(hiragana).0/character13/0500_" + str (i) + ".png")
+#  display(im)
 
 """## **Step 2: 建立模型**
 以下我們就要開始建立核心的 MAML 模型
