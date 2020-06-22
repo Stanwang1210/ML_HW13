@@ -173,7 +173,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
       i = 0
       for ((name, param), grad) in zip(fast_weights.items(), grads): # 這裡是用剛剛算出的 ∇loss 來 update θ 變成 θ'
           st[i] = st[i] + grad*grad
-          Gt = st[i]+eps
+          Gt = pow(st[i]+eps, 0.5)
           print('st[i] : ', st[i])
           print('Gt : ', Gt)
           print('name : ', name)
@@ -181,7 +181,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
           print('grad : ', grad)
           print('(param - inner_lr/pow(Gt, 0.5) * grad) : ', (param - inner_lr/pow(Gt, 0.5) * grad))
           print('(name, (param - inner_lr/pow(Gt, 0.5) * grad)) : ', (name, (param - inner_lr/pow(Gt, 0.5) * grad)))
-          fast_weights = OrderedDict((name, (param - inner_lr/pow(Gt, 0.5) * grad)))
+          fast_weights = OrderedDict((name, (param - inner_lr/Gt * grad)))
           i += 1                        
   
     val_label = create_label(n_way, q_query).cuda()
