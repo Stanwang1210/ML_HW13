@@ -176,12 +176,12 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
           st[i] = st[i] + grad*grad
           Gt = pow(st[i]+eps, 0.5)
           print('st[i] : ', st[i])
-#          print('Gt : ', Gt)
+          print('Gt : ', Gt)
 #          print('name : ', name)
           print('param shape : ', param.shape)
 #          print('grad : ', grad)
 #          print('(param - inner_lr/pow(Gt, 0.5) * grad) : ', (param - inner_lr/pow(Gt, 0.5) * grad))
-          print('(name, (param - inner_lr/pow(Gt, 0.5) * grad)) : ', (name, (param - inner_lr/pow(Gt, 0.5) * grad)).shape)
+#          print('(name, (param - inner_lr/pow(Gt, 0.5) * grad)) : ', (name, (param - inner_lr/pow(Gt, 0.5) * grad)).shape)
           fast_weights = OrderedDict((name, (param - inner_lr/Gt * grad)))
           i += 1                        
   
