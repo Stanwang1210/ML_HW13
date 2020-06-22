@@ -162,7 +162,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
     
     fast_weights = OrderedDict(model.named_parameters()) # 在 inner loop update 參數時，我們不能動到實際參數，因此用 fast_weights 來儲存新的參數 θ'
     st = [0.0 for i in model.named_parameters()]
-    print('st : ',st)
+#    print('st : ',st)
     eps = 1e-8
     for inner_step in range(inner_train_steps): # 這個 for loop 是 Algorithm2 的 line 7~8
                                                 # 實際上我們 inner loop 只有 update 一次 gradients，不過某些 task 可能會需要多次 update inner loop 的 θ'，
@@ -172,19 +172,20 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
       loss = criterion(logits, train_label)
       grads = torch.autograd.grad(loss, fast_weights.values(), create_graph = True) # 這裡是要計算出 loss 對 θ 的微分 (∇loss)    
       i = 0
+      weights = []
       for ((name, param), grad) in zip(fast_weights.items(), grads): # 這裡是用剛剛算出的 ∇loss 來 update θ 變成 θ'
           st[i] = st[i] + grad*grad
           Gt = pow(st[i]+eps, 0.5)
-          print('st[i] : ', st[i].shape)
-          print('Gt : ', Gt)
+#          print('st[i] : ', st[i].shape)
+#          print('Gt : ', Gt)
 #          print('name : ', name)
-          print('param shape : ', param.shape)
-          print('grad shape: ', grad.shape)
+#          print('param shape : ', param.shape)
+#          print('grad shape: ', grad.shape)
 #          print('(param - inner_lr/pow(Gt, 0.5) * grad) : ', (param - inner_lr/pow(Gt, 0.5) * grad))
 #          print('(name, (param - inner_lr/pow(Gt, 0.5) * grad)) : ', (name, (param - inner_lr/pow(Gt, 0.5) * grad)).shape)
-          fast_weights = OrderedDict((name, (param - inner_lr/Gt * grad)))
+          weights.append((name, (param - inner_lr/Gt * grad)))
           i += 1                        
-  
+      fast_weights = OrderedDict(weights)
     val_label = create_label(n_way, q_query).cuda()
     logits = model.functional_forward(val_set, fast_weights) # 這裡用 val_set 和 θ' 算 logit
     loss = criterion(logits, val_label)                      # 這裡用 val_set 和 θ' 算 loss
