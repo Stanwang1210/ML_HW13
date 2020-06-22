@@ -161,7 +161,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
     val_set = meta_batch[n_way*k_shot:]   # val_set 是我們拿來 update outer loop 參數的 data
     
     fast_weights = OrderedDict(model.named_parameters()) # 在 inner loop update 參數時，我們不能動到實際參數，因此用 fast_weights 來儲存新的參數 θ'
-    st = [0. for i in model.named_parameters()]
+    st = [0.0 for i in model.named_parameters()]
     eps = 1e-8
     for inner_step in range(inner_train_steps): # 這個 for loop 是 Algorithm2 的 line 7~8
                                                 # 實際上我們 inner loop 只有 update 一次 gradients，不過某些 task 可能會需要多次 update inner loop 的 θ'，
@@ -174,7 +174,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
       for ((name, param), grad) in zip(fast_weights.items(), grads): # 這裡是用剛剛算出的 ∇loss 來 update θ 變成 θ'
           st[i] = st[i] + grad*grad
           Gt = st[i]+eps
-          fast_weights = OrderedDict((name, param - inner_lr * grad / pow(Gt, 0.5)))
+          fast_weights = OrderedDict((name, (param - inner_lr/pow(Gt, 0.5) * grad)))
           i += 1                        
   
     val_label = create_label(n_way, q_query).cuda()
