@@ -175,7 +175,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
       for ((name, param), grad) in zip(fast_weights.items(), grads): # 這裡是用剛剛算出的 ∇loss 來 update θ 變成 θ'
           st[i] = st[i] + grad*grad
           Gt = pow(st[i]+eps, 0.5)
-          print('st[i] : ', st[i])
+          print('st[i] : ', st[i].shape)
           print('Gt : ', Gt)
 #          print('name : ', name)
           print('param shape : ', param.shape)
