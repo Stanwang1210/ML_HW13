@@ -172,7 +172,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
 #      print('grads[0] is ', grads[0].shape)
 #      print('grads[1] is ', grads[1].shape)
 #      jfkafkndlsf
-      fast_weights = OrderedDict((name, param - 1/64) for name, param in fast_weights.items() )# 這裡是用剛剛算出的 ∇loss 來 update θ 變成 θ'
+      fast_weights = OrderedDict((name, param - 1/64/3/3) for name, param in fast_weights.items() )# 這裡是用剛剛算出的 ∇loss 來 update θ 變成 θ'
   
     val_label = create_label(n_way, q_query).cuda()
     logits = model.functional_forward(val_set, fast_weights) # 這裡用 val_set 和 θ' 算 logit
