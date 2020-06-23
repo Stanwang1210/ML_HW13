@@ -161,24 +161,23 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
     val_set = meta_batch[n_way*k_shot:]   # val_set 是我們拿來 update outer loop 參數的 data
     
     fast_weights = OrderedDict(model.named_parameters()) # 在 inner loop update 參數時，我們不能動到實際參數，因此用 fast_weights 來儲存新的參數 θ'
-    print('fast_weights.values() is ',fast_weights.values())
-    for name, param in fast_weights.items():
-        print('name is :', name)
-        print('param is :', param.shape)
-    njuadks
+#    print('fast_weights.values() is ',fast_weights.values())
+#    for name, param in fast_weights.items():
+#        print('name is :', name)
+#        print('param is :', param.shape)
+    
     for inner_step in range(inner_train_steps): # 這個 for loop 是 Algorithm2 的 line 7~8
                                                 # 實際上我們 inner loop 只有 update 一次 gradients，不過某些 task 可能會需要多次 update inner loop 的 θ'，
-                                                # 所以我們還是用 for loop 來寫
-                
+                                                # 所以我們還是用 for loop 來寫        
       train_label = create_label(n_way, k_shot).cuda()
       logits = model.functional_forward(train_set, fast_weights)
       loss = criterion(logits, train_label)
-#      grads = torch.autograd.grad(loss, fast_weights.values(), create_graph = True) # 這裡是要計算出 loss 對 θ 的微分 (∇loss)    
+      grads = torch.autograd.grad(loss, logits, create_graph = True) # 這裡是要計算出 loss 對 θ 的微分 (∇loss)    
 #      print('grads[0] is ', grads[0].shape)
 #      print('grads[1] is ', grads[1].shape)
 #      jfkafkndlsf
-      fast_weights = OrderedDict((name, param - inner_lr) for name, param in fast_weights.items() )# 這裡是用剛剛算出的 ∇loss 來 update θ 變成 θ'
-  
+      fast_weights = OrderedDict((name, param - inner_lr * grad)
+                                  for ((name, param), grad) in zip(fast_weights.items(), grads))
     val_label = create_label(n_way, q_query).cuda()
     logits = model.functional_forward(val_set, fast_weights) # 這裡用 val_set 和 θ' 算 logit
     loss = criterion(logits, val_label)                      # 這裡用 val_set 和 θ' 算 loss
