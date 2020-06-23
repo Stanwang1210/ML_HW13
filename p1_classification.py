@@ -173,8 +173,10 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
       logits = model.functional_forward(train_set, fast_weights)
       loss = criterion(logits, train_label)
       grads = torch.autograd.grad(loss, logits, create_graph = False) # 這裡是要計算出 loss 對 θ 的微分 (∇loss)    
-#      print('grads[0] is ', grads[0].shape)
-#      print('grads[1] is ', grads[1].shape)
+      print('grads[0] is ', grads[0].shape)
+      print('grads[1] is ', grads[1].shape)
+      print('grads[0] is ', grads[0])
+      print('grads[1] is ', grads[1])
 #      jfkafkndlsf
       fast_weights = OrderedDict((name, param - inner_lr * grad)
                                   for ((name, param), grad) in zip(fast_weights.items(), grads))
