@@ -161,6 +161,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
     val_set = meta_batch[n_way*k_shot:]   # val_set 是我們拿來 update outer loop 參數的 data
     
     fast_weights = OrderedDict(model.named_parameters()) # 在 inner loop update 參數時，我們不能動到實際參數，因此用 fast_weights 來儲存新的參數 θ'
+    print('fast_weights.values() is ',fast_weights.values())
     for name, param in fast_weights.items():
         print('name is :', name)
         print('param is :', param.shape)
