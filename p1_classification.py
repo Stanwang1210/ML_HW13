@@ -222,7 +222,7 @@ class Omniglot(Dataset):
 n_way = 5
 k_shot = 1
 q_query = 1
-inner_train_steps = 1
+inner_train_steps = 3
 inner_lr = 0.4
 meta_lr = 0.001
 meta_batch_size = 32
