@@ -125,8 +125,8 @@ class Classifier(nn.Module):
     for block in [1, 2, 3, 4]:
       x = ConvBlockFunction(x, params[f'conv{block}.0.weight'], params[f'conv{block}.0.bias'],
                             params.get(f'conv{block}.1.weight'), params.get(f'conv{block}.1.bias'))
-    print('conv1.0.weight is ',params['conv1.0.weight'])
-    print('conv1.1.weight is ',params.get('conv1.1.weight'))
+#    print('conv1.0.weight is ',params['conv1.0.weight'])
+#    print('conv1.1.weight is ',params.get('conv1.1.weight'))
     x = x.view(x.shape[0], -1)
     x = F.linear(x, params['logits.weight'] , params['logits.bias'])
     return x
@@ -228,7 +228,7 @@ inner_train_step = 3
 inner_lr = 0.4
 meta_lr = 0.001
 meta_batch_size = 32
-max_epoch = 100
+max_epoch = 150
 eval_batches = test_batches = 20
 train_data_path = f'{workspace_dir}/Omniglot/images_background/'
 test_data_path = f'{workspace_dir}/Omniglot/images_evaluation/'
