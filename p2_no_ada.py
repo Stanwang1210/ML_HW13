@@ -162,7 +162,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
     
     fast_weights = OrderedDict(model.named_parameters()) # 在 inner loop update 參數時，我們不能動到實際參數，因此用 fast_weights 來儲存新的參數 θ'
     
-    for inner_step in range(inner_train_steps): # 這個 for loop 是 Algorithm2 的 line 7~8
+    for inner_step in range(inner_train_step): # 這個 for loop 是 Algorithm2 的 line 7~8
                                                 # 實際上我們 inner loop 只有 update 一次 gradients，不過某些 task 可能會需要多次 update inner loop 的 θ'，
                                                 # 所以我們還是用 for loop 來寫
       train_label = create_label(n_way, k_shot).cuda()
@@ -214,7 +214,7 @@ class Omniglot(Dataset):
 n_way = 5
 k_shot = 1
 q_query = 1
-inner_train_steps = 5
+inner_train_step = 5
 inner_lr = 0.4
 meta_lr = 0.001
 meta_batch_size = 32
