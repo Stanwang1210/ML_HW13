@@ -145,7 +145,7 @@ create_label(5, 2)
 以下詳細解釋：
 """
 
-def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step = 1, inner_lr = 0.4, train = True, second_order = False):
+def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, second_order = False, inner_train_step = 1, inner_lr = 0.4, train = True):
   """
   Args:
   x is the input omniglot images for a meta_step, shape = [batch_size, n_way * (k_shot + q_query), 1, 28, 28]
@@ -280,7 +280,7 @@ for epoch in range(max_epoch):
   train_acc = []
   for step in tqdm(range(len(train_loader) // (meta_batch_size))): # 這裡的 step 是一次 meta-gradinet update step
     x, train_iter = get_meta_batch(meta_batch_size, k_shot, q_query, train_loader, train_iter)
-    meta_loss, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step, train = True, second_order)
+    meta_loss, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, second_order, inner_train_step)
     train_meta_loss.append(meta_loss.item())
     train_acc.append(acc)
 
@@ -292,7 +292,7 @@ for epoch in range(max_epoch):
   val_acc = []
   for eval_step in tqdm(range(len(val_loader) // (eval_batches))):
     x, val_iter = get_meta_batch(eval_batches, k_shot, q_query, val_loader, val_iter)
-    _, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step = 3, train = False, second_order) # testing時，我們更新三次 inner-step
+    _, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, second_order, inner_train_step = 3, train = False) # testing時，我們更新三次 inner-step
     val_acc.append(acc)
   print("  Validation accuracy: ", np.mean(val_acc))
   
@@ -301,6 +301,6 @@ for epoch in range(max_epoch):
 test_acc = []
 for test_step in tqdm(range(len(test_loader) // (test_batches))):
   x, test_iter = get_meta_batch(test_batches, k_shot, q_query, test_loader, test_iter)
-  _, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step = 3, train = False, second_order) # testing 時，我們更新三次 inner-step
+  _, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, second_order, inner_train_step = 3, train = False) # testing 時，我們更新三次 inner-step
   test_acc.append(acc)
 print("  Testing accuracy: ", np.mean(test_acc))
