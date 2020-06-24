@@ -226,7 +226,7 @@ inner_train_step = 3
 inner_lr = 0.4
 meta_lr = 0.001
 meta_batch_size = 32
-max_epoch = 50
+max_epoch = 100
 eval_batches = test_batches = 20
 train_data_path = f'{workspace_dir}/Omniglot/images_background/'
 test_data_path = f'{workspace_dir}/Omniglot/images_evaluation/'
