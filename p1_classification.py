@@ -125,6 +125,8 @@ class Classifier(nn.Module):
     for block in [1, 2, 3, 4]:
       x = ConvBlockFunction(x, params[f'conv{block}.0.weight'], params[f'conv{block}.0.bias'],
                             params.get(f'conv{block}.1.weight'), params.get(f'conv{block}.1.bias'))
+    print('conv1.0.weight is ',params['conv1.0.weight'])
+    print('conv1.1.weight is ',params.get('conv1.1.weight'))
     x = x.view(x.shape[0], -1)
     x = F.linear(x, params['logits.weight'] , params['logits.bias'])
     return x
