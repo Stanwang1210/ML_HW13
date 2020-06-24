@@ -162,7 +162,7 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step 
     
     fast_weights = OrderedDict(model.named_parameters()) # 在 inner loop update 參數時，我們不能動到實際參數，因此用 fast_weights 來儲存新的參數 θ'
     
-    for inner_step in range(inner_train_steps): # 這個 for loop 是 Algorithm2 的 line 7~8
+    for inner_step in range(inner_train_step): # 這個 for loop 是 Algorithm2 的 line 7~8
                                                 # 實際上我們 inner loop 只有 update 一次 gradients，不過某些 task 可能會需要多次 update inner loop 的 θ'，
                                                 # 所以我們還是用 for loop 來寫
       train_label = create_label(n_way, k_shot).cuda()
@@ -214,7 +214,7 @@ class Omniglot(Dataset):
 n_way = 5
 k_shot = 1
 q_query = 1
-inner_train_steps = 1
+inner_train_step = 3
 inner_lr = 0.4
 meta_lr = 0.001
 meta_batch_size = 32
@@ -274,15 +274,16 @@ def get_meta_batch(meta_batch_size, k_shot, q_query, data_loader, iterator):
 
 for epoch in range(max_epoch):
   print("Epoch %d" %(epoch))
+  if epoch > 50:
+      second_order = True
   train_meta_loss = []
   train_acc = []
   for step in tqdm(range(len(train_loader) // (meta_batch_size))): # 這裡的 step 是一次 meta-gradinet update step
     x, train_iter = get_meta_batch(meta_batch_size, k_shot, q_query, train_loader, train_iter)
-    meta_loss, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, second_order)
+    meta_loss, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step, train = True, second_order)
     train_meta_loss.append(meta_loss.item())
     train_acc.append(acc)
-  if epoch > 50:
-      second_order = True
+
   print("  Loss    : ", np.mean(train_meta_loss))
   print("  Accuracy: ", np.mean(train_acc))
 
@@ -294,12 +295,12 @@ for epoch in range(max_epoch):
     _, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step = 3, train = False, second_order) # testing時，我們更新三次 inner-step
     val_acc.append(acc)
   print("  Validation accuracy: ", np.mean(val_acc))
-
+  
 """測試訓練結果。這就是 report 上要回報的 test accuracy。"""
 
 test_acc = []
 for test_step in tqdm(range(len(test_loader) // (test_batches))):
   x, test_iter = get_meta_batch(test_batches, k_shot, q_query, test_loader, test_iter)
-  _, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step = 3, train = False) # testing 時，我們更新三次 inner-step
+  _, acc = MAML(meta_model, optimizer, x, n_way, k_shot, q_query, loss_fn, inner_train_step = 3, train = False, second_order) # testing 時，我們更新三次 inner-step
   test_acc.append(acc)
 print("  Testing accuracy: ", np.mean(test_acc))
