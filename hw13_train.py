@@ -154,7 +154,8 @@ def MAML(model, optimizer, x, n_way, k_shot, q_query, loss_fn, epcoh, inner_trai
   meta_batch_loss = torch.stack(task_loss).mean() # 我們要用一整個 batch 的 loss 來 update θ (不是 θ')
   if train:
     meta_batch_loss.backward()
-    optimizer.step()
+    if epoch % 2  == 0:
+        optimizer.step()
   task_acc = np.mean(task_acc)
   return meta_batch_loss, task_acc
 
