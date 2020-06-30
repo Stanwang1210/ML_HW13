@@ -191,8 +191,8 @@ meta_lr = 0.001
 meta_batch_size = 32
 max_epoch = 100
 eval_batches = test_batches = 20
-train_data_path = os.path.join(workspace_dir,'/Omniglot/images_background/')
-test_data_path = os.path.join(workspace_dir,'/Omniglot/images_evaluation/')
+train_data_path = os.path.join(workspace_dir,'Omniglot/images_background/')
+test_data_path = os.path.join(workspace_dir,'Omniglot/images_evaluation/')
 
 """初始化 dataloader"""
 
